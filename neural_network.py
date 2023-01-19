@@ -38,6 +38,10 @@ class FullConnectLayer:
         return self.activation["n"](self.z)
 
     def propagate_backward(self, da):
+        da[np.where(np.isnan(da))] = 0
+        self.x[np.where(np.isnan(self.x))] = 0
+        self.z[np.where(np.isnan(self.z))] = 0
+
         da_dz = self.activation["d"](self.z)
         if da_dz.shape == self.z.shape:
             dz = da * da_dz
@@ -152,7 +156,7 @@ class NeuralNetwork:
             self.propagate_backward_req(layer.input_layer, nda)
 
     def calculate_loss(self, predicted, expected):
-        return np.average(self.loss["n"](predicted, expected))
+        return np.nanmean(self.loss["n"](predicted, expected))
 
     def update_weights(self):
         for ao in self.optimizers:
@@ -186,9 +190,9 @@ class NeuralNetwork:
             losses = []
             for batch in train_batched:
                 predicted = self.propagate_forward(batch)
-                excpected = batch[output_name]
-                losses.append(self.calculate_loss(predicted, excpected))
-                self.propagate_backward(excpected)
+                expected = batch[output_name]
+                losses.append(self.calculate_loss(predicted, expected))
+                self.propagate_backward(expected)
                 self.update_weights()
             train_loss = sum(losses)/len(losses)
             predicted = self.propagate_forward(test_set)
