@@ -110,7 +110,7 @@ def cross_entropy_loss_n(predicted, expected):
     return -np.sum(expected * np.log(predicted), axis=0).reshape((1, -1))
 
 def cross_entropy_loss_d(predicted, expected):
-    return -expected / (predicted)
+    return -expected / predicted
 
 cross_entropy_loss = {
     "n": cross_entropy_loss_n,

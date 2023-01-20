@@ -182,11 +182,12 @@ class NeuralNetwork:
 
         return new_set
 
-    def train(self, train_set, test_set, batch_size, output_name, rng):
+    def train(self, train_set, test_set, batch_size, output_name, rng, epoch_count=100):
         train_set = self.shuffle_set(train_set, rng)
         train_batched = self.get_batches(train_set, batch_size)
 
-        while True:
+        for epoch in range(epoch_count):
+            print(f"Epoch {epoch + 1}/{epoch_count}: ", end='')
             losses = []
             for batch in train_batched:
                 predicted = self.propagate_forward(batch)
@@ -194,10 +195,13 @@ class NeuralNetwork:
                 losses.append(self.calculate_loss(predicted, expected))
                 self.propagate_backward(expected)
                 self.update_weights()
-            train_loss = sum(losses)/len(losses)
+            train_loss = sum(losses) / len(losses)
             predicted = self.propagate_forward(test_set)
             test_loss = self.calculate_loss(predicted, test_set[output_name])
-            print(f"Train: {train_loss}, test: {test_loss}")
+            print(f"train: {train_loss}, test: {test_loss}")
+
+    def predict(self, data):
+        return self.propagate_forward(data)
 
 
 class AdamOptimizer:
