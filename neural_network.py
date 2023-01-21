@@ -1,6 +1,7 @@
 import numpy as np
 import math
 
+
 class FullConnectWeights:
     def __init__(self, input_size, output_size, rng):
         xavier_factor = math.sqrt(6 / (input_size + output_size))
@@ -20,8 +21,8 @@ class FullConnectWeights:
 
 
 class FullConnectLayer:
-    def __init__(self, input_layer, output_size = None, activation = None, rng = None, copy = None):
-        if copy == None:
+    def __init__(self, input_layer, output_size=None, activation=None, rng=None, copy=None):
+        if copy is None:
             self.input_layer = input_layer
             self.output_size = output_size
             self.activation = activation
@@ -38,10 +39,6 @@ class FullConnectLayer:
         return self.activation["n"](self.z)
 
     def propagate_backward(self, da):
-        da[np.where(np.isnan(da))] = 0
-        self.x[np.where(np.isnan(self.x))] = 0
-        self.z[np.where(np.isnan(self.z))] = 0
-
         da_dz = self.activation["d"](self.z)
         if da_dz.shape == self.z.shape:
             dz = da * da_dz
