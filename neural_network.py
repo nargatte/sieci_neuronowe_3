@@ -162,12 +162,12 @@ class NeuralNetwork:
     def get_batch(self, set, batch_size, batch_number):
         size = next(iter(set.values())).shape[1]
         u = batch_size*batch_number
-        w = min(batch_size*(batch_number+1), size)
+        w = min(batch_size * (batch_number + 1), size)
         return {n: v[:, u:w] for n, v in set.items()}
 
     def get_batches(self, set, batch_size):
         size = next(iter(set.values())).shape[1]
-        nof_batches = math.ceil(size/batch_size)
+        nof_batches = math.ceil(size / batch_size)
         return [self.get_batch(set, batch_size, idx) for idx in range(nof_batches)]
 
     def shuffle_set(self, set, rng):
@@ -239,5 +239,3 @@ class AdamOptimizer:
         self.weights.b -= self.learning_rate * v_corrected_db / (np.sqrt(s_corrected_db) + self.epsilon)
 
         self.weights.reset()
-
-
