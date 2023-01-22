@@ -184,7 +184,6 @@ class NeuralNetwork:
             print(f"Epoch {epoch + 1}/{epoch_count}: ", end='')
             train_set = self.shuffle_set(train_set, rng)
             train_batched = self.get_batches(train_set, batch_size)
-            train_batched = [train_set]
             losses = []
             for batch in train_batched:
                 predicted = self.propagate_forward(batch)
