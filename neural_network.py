@@ -21,7 +21,7 @@ class FullConnectWeights:
 
 
 class FullConnectLayer:
-    def __init__(self, input_layer, output_size=None, activation=None, rng=None, dropout_rate=0.6, copy=None):
+    def __init__(self, input_layer, output_size=None, activation=None, rng=None, dropout_rate=1, copy=None):
         self.input_layer = input_layer
         self.rng = rng
         self.dropout_rate = dropout_rate
@@ -36,13 +36,12 @@ class FullConnectLayer:
 
     def propagate_forward(self, x, is_training=False):
         self.x = x
+        self.z = np.dot(self.weights.W, x) + self.weights.b
+        r = self.rng.binomial(1, self.dropout_rate, self.z.shape)
         if is_training:
-            r = self.rng.binomial(1, self.dropout_rate, x.shape)
-            self.x = self.x * r
-            self.z = np.dot(self.weights.W, x) + self.weights.b
+            return r / self.dropout_rate * self.activation["n"](self.z)
         else:
-            self.z = np.dot(self.dropout_rate * self.weights.W, x) + self.weights.b
-        return self.activation["n"](self.z)
+            return self.activation["n"](self.z)
 
     def propagate_backward(self, da):
         da_dz = self.activation["d"](self.z)
