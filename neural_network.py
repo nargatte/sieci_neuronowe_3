@@ -106,7 +106,7 @@ class NeuralNetwork:
         self.loss = loss
         self.weights = []
         self.find_weights_req(output_layer)
-        self.weights = [*set(self.weights)]
+        # self.weights = [*set(self.weights)]
         self.optimizers = [AdamOptimizer(w) for w in self.weights]
 
     def find_weights_req(self, layer):
@@ -180,11 +180,11 @@ class NeuralNetwork:
         return new_set
 
     def train(self, train_set, test_set, batch_size, output_name, rng, epoch_count=100):
-        train_set = self.shuffle_set(train_set, rng)
-        train_batched = self.get_batches(train_set, batch_size)
-
         for epoch in range(epoch_count):
             print(f"Epoch {epoch + 1}/{epoch_count}: ", end='')
+            train_set = self.shuffle_set(train_set, rng)
+            train_batched = self.get_batches(train_set, batch_size)
+            train_batched = [train_set]
             losses = []
             for batch in train_batched:
                 predicted = self.propagate_forward(batch)
