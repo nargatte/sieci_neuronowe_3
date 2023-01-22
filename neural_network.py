@@ -21,21 +21,27 @@ class FullConnectWeights:
 
 
 class FullConnectLayer:
-    def __init__(self, input_layer, output_size=None, activation=None, rng=None, copy=None):
+    def __init__(self, input_layer, output_size=None, activation=None, rng=None, dropout_rate=0.6, copy=None):
+        self.input_layer = input_layer
+        self.rng = rng
+        self.dropout_rate = dropout_rate
         if copy is None:
-            self.input_layer = input_layer
             self.output_size = output_size
             self.activation = activation
             self.weights = FullConnectWeights(input_layer.output_size, output_size, rng)
         else:
-            self.input_layer = input_layer
             self.output_size = copy.output_size
             self.activation = copy.activation
             self.weights = copy.weights
 
-    def propagate_forward(self, x):
+    def propagate_forward(self, x, is_training=False):
         self.x = x
-        self.z = np.dot(self.weights.W, x) + self.weights.b
+        if is_training:
+            r = self.rng.binomial(1, self.dropout_rate, x.shape)
+            self.x = self.x * r
+            self.z = np.dot(self.weights.W, x) + self.weights.b
+        else:
+            self.z = np.dot(self.dropout_rate * self.weights.W, x) + self.weights.b
         return self.activation["n"](self.z)
 
     def propagate_backward(self, da):
@@ -106,7 +112,6 @@ class NeuralNetwork:
         self.loss = loss
         self.weights = []
         self.find_weights_req(output_layer)
-        # self.weights = [*set(self.weights)]
         self.optimizers = [AdamOptimizer(w) for w in self.weights]
 
     def find_weights_req(self, layer):
@@ -119,12 +124,12 @@ class NeuralNetwork:
             self.weights.append(layer.weights)
             self.find_weights_req(layer.input_layer)
 
-    def propagate_forward(self, inputs):
+    def propagate_forward(self, inputs, is_training=False):
         self.inputs = inputs
-        self.a = self.propagate_forward_req(self.output_layer)
+        self.a = self.propagate_forward_req(self.output_layer, is_training)
         return self.a
         
-    def propagate_forward_req(self, layer):
+    def propagate_forward_req(self, layer, is_training=False):
         if type(layer) == InputLayer:
             return layer.propagate_forward(self.inputs)
         elif type(layer) == MergeLayer:
@@ -134,7 +139,7 @@ class NeuralNetwork:
             return layer.propagate_forward()
         else:
             x = self.propagate_forward_req(layer.input_layer)
-            return layer.propagate_forward(x)
+            return layer.propagate_forward(x, is_training)
 
     def propagate_backward(self, expected):
         da = self.loss["d"](self.a, expected)
@@ -186,7 +191,7 @@ class NeuralNetwork:
             train_batched = self.get_batches(train_set, batch_size)
             losses = []
             for batch in train_batched:
-                predicted = self.propagate_forward(batch)
+                predicted = self.propagate_forward(batch, True)
                 expected = batch[output_name]
                 losses.append(self.calculate_loss(predicted, expected))
                 self.propagate_backward(expected)
