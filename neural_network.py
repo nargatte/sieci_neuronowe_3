@@ -186,10 +186,12 @@ class NeuralNetwork:
 
     def train(self, train_set, test_set, batch_size, output_name, epoch_count=100):
         stagnant_count = 0
+        epochs_without_improvement = 0
         epoch = 0
         train_losses = []
         test_losses = []
-        while stagnant_count < 3:
+        min_loss = math.inf
+        while stagnant_count < 3 and epochs_without_improvement < 10:
             epoch += 1
             print(f"Epoch {epoch}: ", end='')
             train_set = self.shuffle_set(train_set, self.rng)
@@ -211,6 +213,11 @@ class NeuralNetwork:
                 stagnant_count += 1
             else:
                 stagnant_count = 0
+            if test_losses[-1] < min_loss:
+                min_loss = test_losses[-1]
+                epochs_without_improvement = 0
+            else:
+                epochs_without_improvement += 1
 
         return (train_losses, test_losses)
 

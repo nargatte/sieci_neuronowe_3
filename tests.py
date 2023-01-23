@@ -27,7 +27,7 @@ from test_case_creator import (
 # %%
 (train_set1, test_set1, params1) = get_sets__without_neighbors__one_prediction__without_aggregation()
 (train_set2, test_set2, params2) = get_sets__with_3_neighbors__one_prediction__without_aggregation()
-(train_set3, test_set3, params3) = get_sets__without_neighbors__24_predictions__without_aggregation()
+# (train_set3, test_set3, params3) = get_sets__without_neighbors__24_predictions__without_aggregation()
 (train_set4, test_set4, params4) = get_sets__without_neighbors__one_prediction__with_aggregation()
 
 # %% [markdown]
@@ -262,15 +262,15 @@ def test(function, output, train_set, test_set, params, figname):
     fig.savefig(os.path.join("plots", "h1", figname))
 
 # %%
-test(get_h1_net_1, "output_temp", train_set1, test_set1, params1, "n1_r_no_neighbors.png")
-test(get_h1_net_2, "output_temp", train_set1, test_set1, params1, "n2_r_no_neighbors.png")
-test(get_h1_net_3, "output_temp", train_set2, test_set2, params2, "n3_r_neighbors.png")
-test(get_h1_net_4, "output_temp", train_set2, test_set2, params2, "n4_r_neighbors.png")
+# test(get_h1_net_1, "output_temp", train_set1, test_set1, params1, "n1_r_no_neighbors.png")
+# test(get_h1_net_2, "output_temp", train_set1, test_set1, params1, "n2_r_no_neighbors.png")
+# test(get_h1_net_3, "output_temp", train_set2, test_set2, params2, "n3_r_neighbors.png")
+# test(get_h1_net_4, "output_temp", train_set2, test_set2, params2, "n4_r_neighbors.png")
 
-test(get_h1_net_1, "output_wind", train_set1, test_set1, params1, "n1_c_no_neighbors.png")
-test(get_h1_net_2, "output_wind", train_set1, test_set1, params1, "n2_c_no_neighbors.png")
-test(get_h1_net_3, "output_wind", train_set2, test_set2, params2, "n3_c_neighbors.png")
-test(get_h1_net_4, "output_wind", train_set2, test_set2, params2, "n4_c_neighbors.png")
+# test(get_h1_net_1, "output_wind", train_set1, test_set1, params1, "n1_c_no_neighbors.png")
+# test(get_h1_net_2, "output_wind", train_set1, test_set1, params1, "n2_c_no_neighbors.png")
+# test(get_h1_net_3, "output_wind", train_set2, test_set2, params2, "n3_c_neighbors.png")
+# test(get_h1_net_4, "output_wind", train_set2, test_set2, params2, "n4_c_neighbors.png")
 
 # %% [markdown]
 # ## H2 - mean from 24 predictions will be better for architectures with little number of weights, whereas 1 prediction will be better when many weights
@@ -373,10 +373,10 @@ def test(function, output_size, train_set, test_set, params, figname):
     fig.savefig(os.path.join("plots", "h2", figname))
 
 # %%
-test(get_h2_net_1, 1, train_set1, test_set1, params1, "n1_r_1_prediction.png")
-test(get_h2_net_2, 1, train_set1, test_set1, params1, "n2_r_1_prediction.png")
-test(get_h2_net_1, 24, train_set3, test_set3, params3, "n1_r_24_predictions.png")
-test(get_h2_net_2, 24, train_set3, test_set3, params3, "n2_r_24_predictions.png")
+# test(get_h2_net_1, 1, train_set1, test_set1, params1, "n1_r_1_prediction.png")
+# test(get_h2_net_2, 1, train_set1, test_set1, params1, "n2_r_1_prediction.png")
+# test(get_h2_net_1, 24, train_set3, test_set3, params3, "n1_r_24_predictions.png")
+# test(get_h2_net_2, 24, train_set3, test_set3, params3, "n2_r_24_predictions.png")
 
 # %% [markdown]
 # ## H3 - L2 grants faster convergence than L1
@@ -532,15 +532,15 @@ def test(function, loss, train_set, test_set, params, figname):
     fig.savefig(os.path.join("plots", "h3", figname))
 
 # %%
-test(get_h3_net_1, d.l1_loss, train_set1, test_set1, params1, "n1_l1.png")
-test(get_h3_net_2, d.l1_loss, train_set1, test_set1, params1, "n2_l1.png")
-test(get_h3_net_3, d.l1_loss, train_set1, test_set1, params1, "n3_l1.png")
-test(get_h3_net_4, d.l1_loss, train_set1, test_set1, params1, "n4_l1.png")
+# test(get_h3_net_1, d.l1_loss, train_set1, test_set1, params1, "n1_l1.png")
+# test(get_h3_net_2, d.l1_loss, train_set1, test_set1, params1, "n2_l1.png")
+# test(get_h3_net_3, d.l1_loss, train_set1, test_set1, params1, "n3_l1.png")
+# test(get_h3_net_4, d.l1_loss, train_set1, test_set1, params1, "n4_l1.png")
 
-test(get_h3_net_1, d.l2_loss, train_set1, test_set1, params1, "n1_l2.png")
-test(get_h3_net_2, d.l2_loss, train_set1, test_set1, params1, "n2_l2.png")
-test(get_h3_net_3, d.l2_loss, train_set1, test_set1, params1, "n3_l2.png")
-test(get_h3_net_4, d.l2_loss, train_set1, test_set1, params1, "n4_l2.png")
+# test(get_h3_net_1, d.l2_loss, train_set1, test_set1, params1, "n1_l2.png")
+# test(get_h3_net_2, d.l2_loss, train_set1, test_set1, params1, "n2_l2.png")
+# test(get_h3_net_3, d.l2_loss, train_set1, test_set1, params1, "n3_l2.png")
+# test(get_h3_net_4, d.l2_loss, train_set1, test_set1, params1, "n4_l2.png")
 
 # %% [markdown]
 # ## H4 - cross-entropy and hinge will not differ in terms of convergence
@@ -569,7 +569,7 @@ def get_h4_net_1(loss):
     output = nn.FullConnectLayer(output, 250, d.relu, rng, 0.6)
     output = nn.FullConnectLayer(output, 100, d.relu, rng, 0.6)
     output = nn.FullConnectLayer(output, 40, d.relu, rng, 0.5)
-    output = nn.FullConnectLayer(output, 2, d.relu, rng, 1)
+    output = nn.FullConnectLayer(output, 2, d.sigmoid, rng, 1)
     output = nn.FullConnectLayer(output, 2, d.softmax, rng, 1)
 
     return nn.NeuralNetwork(output, loss, rng)
@@ -618,7 +618,7 @@ def get_h4_net_3(loss):
     output = nn.FullConnectLayer(output, 200, d.relu, rng, 0.8)
     output = nn.FullConnectLayer(output, 100, d.relu, rng, 0.6)
     output = nn.FullConnectLayer(output, 40, d.relu, rng, 0.5)
-    output = nn.FullConnectLayer(output, 2, d.relu, rng, 1)
+    output = nn.FullConnectLayer(output, 2, d.sigmoid, rng, 1)
     output = nn.FullConnectLayer(output, 2, d.softmax, rng, 1)
 
     return nn.NeuralNetwork(output, loss, rng)
@@ -659,7 +659,7 @@ def test(function, loss, train_set, test_set, params, figname):
     net = function(loss)
 
     start = time.time()
-    (train_losses, test_losses) = net.train(train_set, test_set, 1024, "output_temp")
+    (train_losses, test_losses) = net.train(train_set, test_set, 1024, "output_wind")
     end = time.time()
 
     print(f"Time elapsed: {end - start : .2f} s")
@@ -692,15 +692,15 @@ def test(function, loss, train_set, test_set, params, figname):
     fig.savefig(os.path.join("plots", "h4", figname))
 
 # %%
-test(get_h4_net_1, d.cross_entropy_loss, train_set1, test_set1, params1, "n1_cross_entropy.png")
-test(get_h4_net_2, d.cross_entropy_loss, train_set1, test_set1, params1, "n2_cross_entropy.png")
-test(get_h4_net_3, d.cross_entropy_loss, train_set1, test_set1, params1, "n3_cross_entropy.png")
-test(get_h4_net_4, d.cross_entropy_loss, train_set1, test_set1, params1, "n4_cross_entropy.png")
+# test(get_h4_net_1, d.cross_entropy_loss, train_set1, test_set1, params1, "n1_cross_entropy.png")
+# test(get_h4_net_2, d.cross_entropy_loss, train_set1, test_set1, params1, "n2_cross_entropy.png")
+# test(get_h4_net_3, d.cross_entropy_loss, train_set1, test_set1, params1, "n3_cross_entropy.png")
+# test(get_h4_net_4, d.cross_entropy_loss, train_set1, test_set1, params1, "n4_cross_entropy.png")
 
-test(get_h4_net_1, d.hinge_loss, train_set1, test_set1, params1, "n1_hinge.png")
-test(get_h4_net_2, d.hinge_loss, train_set1, test_set1, params1, "n2_hinge.png")
-test(get_h4_net_3, d.hinge_loss, train_set1, test_set1, params1, "n3_hinge.png")
-test(get_h4_net_4, d.hinge_loss, train_set1, test_set1, params1, "n4_hinge.png")
+# test(get_h4_net_1, d.hinge_loss, train_set1, test_set1, params1, "n1_hinge.png")
+# test(get_h4_net_2, d.hinge_loss, train_set1, test_set1, params1, "n2_hinge.png")
+# test(get_h4_net_3, d.hinge_loss, train_set1, test_set1, params1, "n3_hinge.png")
+# test(get_h4_net_4, d.hinge_loss, train_set1, test_set1, params1, "n4_hinge.png")
 
 # %% [markdown]
 # #### Test results
@@ -918,8 +918,8 @@ def test(function, output, train_set, test_set, params, figname):
     fig.savefig(os.path.join("plots", "h5", figname))
 
 # %%
-test(get_h5_net_1, "output_temp", train_set1, test_set1, params1, "n1_r.png")
-test(get_h5_net_2, "output_temp", train_set1, test_set1, params1, "n2_r.png")
+# test(get_h5_net_1, "output_temp", train_set1, test_set1, params1, "n1_r.png")
+# test(get_h5_net_2, "output_temp", train_set1, test_set1, params1, "n2_r.png")
 test(get_h5_net_3, "output_temp", train_set2, test_set2, params2, "n3_r.png")
 
 test(get_h5_net_1, "output_wind", train_set1, test_set1, params1, "n1_c.png")
