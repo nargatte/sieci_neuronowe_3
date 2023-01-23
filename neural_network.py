@@ -205,7 +205,7 @@ class NeuralNetwork:
             test_loss = self.calculate_loss(predicted, test_set[output_name])
             print(f"train: {train_loss}, test: {test_loss}")
             test_losses.append(test_loss)
-            if (len(test_losses) > 1 and test_losses[-1] >= test_losses[-2]):
+            if len(test_losses) > 1 and (test_losses[-2] - test_losses[-1]) / test_losses[-2] < 0.001:
                 stagnant_count += 1
             else:
                 stagnant_count = 0
