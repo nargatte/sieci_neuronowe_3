@@ -187,6 +187,7 @@ class NeuralNetwork:
     def train(self, train_set, test_set, batch_size, output_name, epoch_count=100):
         stagnant_count = 0
         epoch = 0
+        train_losses = []
         test_losses = []
         while stagnant_count < 3:
             epoch += 1
@@ -204,11 +205,14 @@ class NeuralNetwork:
             predicted = self.propagate_forward(test_set)
             test_loss = self.calculate_loss(predicted, test_set[output_name])
             print(f"train: {train_loss}, test: {test_loss}")
+            train_losses.append(train_loss)
             test_losses.append(test_loss)
             if len(test_losses) > 1 and (test_losses[-2] - test_losses[-1]) / test_losses[-2] < 0.001:
                 stagnant_count += 1
             else:
                 stagnant_count = 0
+
+        return (train_losses, test_losses)
 
     def predict(self, data):
         return self.propagate_forward(data)
