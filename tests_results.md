@@ -33,12 +33,14 @@ L1:
 2. 6 epochs, 15.73 % / 15.23%, 55.99 s
 3. 19 epochs, 44.79% / 7.32%, 47.08 s
 4. 6 epochs, 42.57% / 6.37%, 31.44 s
+5. 19 epochs, 52.14% / 19.16%, 134.31 s
 
 L2:
 1. 6 epochs, 52.48% / 7.49%, 31.62s
 2. 5 epochs, 16.26% / 15.98%, 51.73 s
 3. 4 epochs, 28.33% / 7.64%, 15.74 s
 4. 8 epochs, 38.05% / 8.22%, 35.63 s
+5. 27 epochs, 46.57% / 44.87%, 191.42 s
 
 # H4 - cross-entropy and hinge will not differ in terms of convergence
 
