@@ -92,7 +92,7 @@ def normalize_city_attributes(city_attributes):
     city_attributes["Latitude"] = (city_attributes["Latitude"] - latitude_min) / (latitude_max - latitude_min)
     city_attributes["Longitude"] = (city_attributes["Longitude"] - longitude_min) / (longitude_max - longitude_min)
 
-def to_city_day_vector(ctv, wind_treshold, step=24):
+def to_city_day_vector_one_prediction(ctv, wind_treshold, step=24):
     cdv = {}
     for city, df in ctv.items():
         u = 0
@@ -108,13 +108,13 @@ def to_city_day_vector(ctv, wind_treshold, step=24):
         cdv[city] = cdr
     return cdv
 
-def to_city_day_vector2(ctv, wind_treshold, step=24):
+def to_city_day_vector_n_predictions(ctv, wind_treshold, n=24):
     cdv = {}
     for city, df in ctv.items():
         u = 0
         cdr = []
         while u < len(df):
-            w = u + step
+            w = u + n
             date = df.iloc[u, 0]
             vec = np.reshape(df.iloc[u : w, 1:].to_numpy(), -1)
             temp = df.iloc[u : w]["temperature"]
@@ -217,6 +217,92 @@ def get_set2(cdv, city_encoder, city_attributes_raw):
 
     return {key: np.vstack(val).T for key, val in set.items()}
 
+def get_set3(cdv, city_encoder, city_attributes_raw, nearest_cities):
+    d1 = []
+    d1_n1 = []
+    d1_n2 = []
+    d1_n3 = []
+    d2 = []
+    d2_n1 = []
+    d2_n2 = []
+    d2_n3 = []
+    d3 = []
+    d3_n1 = []
+    d3_n2 = []
+    d3_n3 = []
+    output_temp = []
+    output_wind = []
+    date = []
+    city_one_hot = []
+    city_one_hot_n1 = []
+    city_one_hot_n2 = []
+    city_one_hot_n3 = []
+    coords = []
+    coords_n1 = []
+    coords_n2 = []
+    coords_n3 = []
+
+    for city, dv in cdv.items():
+        dv_n1 = cdv[nearest_cities[city][0]]
+        dv_n2 = cdv[nearest_cities[city][1]]
+        dv_n3 = cdv[nearest_cities[city][2]]
+
+        d1 += [r[1] for r in dv[:-4]]
+        d1_n1 += [r[1] for r in dv_n1[:-4]]
+        d1_n2 += [r[1] for r in dv_n2[:-4]]
+        d1_n3 += [r[1] for r in dv_n3[:-4]]
+        d2 += [r[1] for r in dv[1:-3]]
+        d2_n1 += [r[1] for r in dv_n1[1:-3]]
+        d2_n2 += [r[1] for r in dv_n2[1:-3]]
+        d2_n3 += [r[1] for r in dv_n3[1:-3]]
+        d3 += [r[1] for r in dv[2:-2]]
+        d3_n1 += [r[1] for r in dv_n1[2:-2]]
+        d3_n2 += [r[1] for r in dv_n2[2:-2]]
+        d3_n3 += [r[1] for r in dv_n3[2:-2]]
+        output_temp += [r[2] for r in dv[4:]]
+        output_wind += [np.hstack((r[3], 1 - r[3])) for r in dv[4:]]
+        date_str = [r[0] for r in dv[4:]]
+        date += [datetime.datetime.strptime(d, "%d.%m.%Y %H:%M").timetuple().tm_yday / 365 for d in date_str]
+        size = len(date_str)
+        city_one_hot += [city_encoder.transform([[city]]).toarray()[0]] * size
+        city_one_hot_n1 += [city_encoder.transform([[nearest_cities[city][0]]]).toarray()[0]] * size
+        city_one_hot_n2 += [city_encoder.transform([[nearest_cities[city][1]]]).toarray()[0]] * size
+        city_one_hot_n3 += [city_encoder.transform([[nearest_cities[city][2]]]).toarray()[0]] * size
+        coords += [city_attributes_raw.loc[city_attributes_raw["City"] == city][["Latitude", "Longitude"]].to_numpy()] * size
+        coords_n1 += [city_attributes_raw.loc[city_attributes_raw["City"] == nearest_cities[city][0]][["Latitude", "Longitude"]].to_numpy()] * size
+        coords_n2 += [city_attributes_raw.loc[city_attributes_raw["City"] == nearest_cities[city][1]][["Latitude", "Longitude"]].to_numpy()] * size
+        coords_n3 += [city_attributes_raw.loc[city_attributes_raw["City"] == nearest_cities[city][2]][["Latitude", "Longitude"]].to_numpy()] * size
+
+    set = {
+        "d1": d1,
+        "d1_n1": d1_n1,
+        "d1_n2": d1_n2,
+        "d1_n3": d1_n3,
+        "d2": d2,
+        "d2_n1": d2_n1,
+        "d2_n2": d2_n2,
+        "d2_n3": d2_n3,
+        "d3": d3,
+        "d3_n1": d3_n1,
+        "d3_n2": d3_n2,
+        "d3_n3": d3_n3,
+        "output_temp": output_temp,
+        "output_wind": output_wind,
+        "date": date,
+        "city_one_hot": city_one_hot,
+        "city_one_hot_n1": city_one_hot_n1,
+        "city_one_hot_n2": city_one_hot_n2,
+        "city_one_hot_n3": city_one_hot_n3,
+        "coords": coords,
+        "coords_n1": coords_n1,
+        "coords_n2": coords_n2,
+        "coords_n3": coords_n3
+    }
+
+    return {key: np.vstack(val).T for key, val in set.items()}
+
+
+
 def get_sets__without_neighbors__one_prediction__without_aggregation():
     city_attributes_raw = pd.read_csv("data/city_attributes.csv", sep=";")
 
@@ -226,7 +312,7 @@ def get_sets__without_neighbors__one_prediction__without_aggregation():
     normalize(train_ctv, normalization_params)
     normalize_city_attributes(city_attributes_raw)
     wind_treshold = get_wind_treshold(6, normalization_params)
-    train_cdv = to_city_day_vector(train_ctv, wind_treshold)
+    train_cdv = to_city_day_vector_one_prediction(train_ctv, wind_treshold)
     city_encoder = get_city_encoder(city_attributes_raw)
     train_set = get_set1(train_cdv, city_encoder, city_attributes_raw)
     train_set = drop_nan_records(train_set)
@@ -234,7 +320,7 @@ def get_sets__without_neighbors__one_prediction__without_aggregation():
     test_raw = load_test_data()
     test_ctv = to_city_time_vector(test_raw)
     normalize(test_ctv, normalization_params)
-    test_cdv = to_city_day_vector(test_ctv, wind_treshold)
+    test_cdv = to_city_day_vector_one_prediction(test_ctv, wind_treshold)
     test_set = get_set1(test_cdv, city_encoder, city_attributes_raw)
     test_set = drop_nan_records(test_set)
 
@@ -250,7 +336,7 @@ def get_sets__without_neighbors__one_prediction__with_aggregation():
     normalize(train_ctv, normalization_params)
     normalize_city_attributes(city_attributes_raw)
     wind_treshold = get_wind_treshold(6, normalization_params)
-    train_cdv = to_city_day_vector(train_ctv, wind_treshold, 8)
+    train_cdv = to_city_day_vector_one_prediction(train_ctv, wind_treshold, 8)
     city_encoder = get_city_encoder(city_attributes_raw)
     train_set = get_set1(train_cdv, city_encoder, city_attributes_raw)
     train_set = drop_nan_records(train_set)
@@ -259,7 +345,7 @@ def get_sets__without_neighbors__one_prediction__with_aggregation():
     test_ctv = to_city_time_vector(test_raw)
     aggregate(test_ctv)
     normalize(test_ctv, normalization_params)
-    test_cdv = to_city_day_vector(test_ctv, wind_treshold, 8)
+    test_cdv = to_city_day_vector_one_prediction(test_ctv, wind_treshold, 8)
     test_set = get_set1(test_cdv, city_encoder, city_attributes_raw)
     test_set = drop_nan_records(test_set)
 
@@ -274,7 +360,7 @@ def get_sets__without_neighbors__24_predictions__without_aggregation():
     normalize(train_ctv, normalization_params)
     normalize_city_attributes(city_attributes_raw)
     wind_treshold = get_wind_treshold(6, normalization_params)
-    train_cdv = to_city_day_vector2(train_ctv, wind_treshold)
+    train_cdv = to_city_day_vector_n_predictions(train_ctv, wind_treshold)
     city_encoder = get_city_encoder(city_attributes_raw)
     train_set = get_set2(train_cdv, city_encoder, city_attributes_raw)
     train_set = drop_nan_records2(train_set)
@@ -282,129 +368,32 @@ def get_sets__without_neighbors__24_predictions__without_aggregation():
     test_raw = load_test_data()
     test_ctv = to_city_time_vector(test_raw)
     normalize(test_ctv, normalization_params)
-    test_cdv = to_city_day_vector2(test_ctv, wind_treshold)
+    test_cdv = to_city_day_vector_n_predictions(test_ctv, wind_treshold)
     test_set = get_set2(test_cdv, city_encoder, city_attributes_raw)
     test_set = drop_nan_records2(test_set)
 
     return (train_set, test_set, normalization_params)
 
-def get_sets__without_neighbors__8_predictions__with_aggregation():
+def get_sets__with_3_neighbors__one_prediction__without_aggregation():
     city_attributes_raw = pd.read_csv("data/city_attributes.csv", sep=";")
 
     train_raw = load_train_data()
+    nearest_cities = get_nearest_cities(city_attributes_raw)
     normalization_params = get_normalization_params(train_raw)
     train_ctv = to_city_time_vector(train_raw)
-    aggregate(train_ctv)
     normalize(train_ctv, normalization_params)
     normalize_city_attributes(city_attributes_raw)
     wind_treshold = get_wind_treshold(6, normalization_params)
-    train_cdv = to_city_day_vector2(train_ctv, wind_treshold, 8)
+    train_cdv = to_city_day_vector_one_prediction(train_ctv, wind_treshold)
     city_encoder = get_city_encoder(city_attributes_raw)
-    train_set = get_set2(train_cdv, city_encoder, city_attributes_raw)
-    train_set = drop_nan_records2(train_set)
+    train_set = get_set3(train_cdv, city_encoder, city_attributes_raw, nearest_cities)
+    train_set = drop_nan_records(train_set)
 
     test_raw = load_test_data()
     test_ctv = to_city_time_vector(test_raw)
-    aggregate(test_ctv)
     normalize(test_ctv, normalization_params)
-    test_cdv = to_city_day_vector2(test_ctv, wind_treshold, 8)
-    test_set = get_set2(test_cdv, city_encoder, city_attributes_raw)
-    test_set = drop_nan_records2(test_set)
+    test_cdv = to_city_day_vector_one_prediction(test_ctv, wind_treshold)
+    test_set = get_set3(test_cdv, city_encoder, city_attributes_raw, nearest_cities)
+    test_set = drop_nan_records(test_set)
 
     return (train_set, test_set, normalization_params)
-
-def get_sets__with_3_neighbors__one_prediction__without_aggregation():  # TODO
-    city_attributes_raw = pd.read_csv("data/city_attributes.csv", sep=";")
-
-    train_raw = load_train_data()
-    nearest_cities = get_nearest_cities(city_attributes_raw)
-    normalization_params = get_normalization_params(train_raw)
-    train_ctv = to_city_time_vector(train_raw)
-    normalize(train_ctv, normalization_params)
-    normalize_city_attributes(city_attributes_raw)
-    wind_treshold = get_wind_treshold(6, normalization_params)
-    train_cdv = to_city_day_vector(train_ctv, wind_treshold)
-    city_encoder = get_city_encoder(city_attributes_raw)
-    train_set = get_set1(train_cdv, city_encoder, city_attributes_raw)
-    train_set = drop_nan_records(train_set)
-
-    test_raw = load_test_data()
-    test_ctv = to_city_time_vector(test_raw)
-    normalize(test_ctv, normalization_params)
-    test_cdv = to_city_day_vector(test_ctv, wind_treshold)
-    test_set = get_set1(test_cdv, city_encoder, city_attributes_raw)
-    test_set = drop_nan_records(test_set)
-
-    return (train_set, test_set)
-
-def get_sets__with_3_neighbors__one_prediction__with_aggregation():  # TODO
-    city_attributes_raw = pd.read_csv("data/city_attributes.csv", sep=";")
-
-    train_raw = load_train_data()
-    nearest_cities = get_nearest_cities(city_attributes_raw)
-    normalization_params = get_normalization_params(train_raw)
-    train_ctv = to_city_time_vector(train_raw)
-    normalize(train_ctv, normalization_params)
-    normalize_city_attributes(city_attributes_raw)
-    wind_treshold = get_wind_treshold(6, normalization_params)
-    train_cdv = to_city_day_vector(train_ctv, wind_treshold)
-    city_encoder = get_city_encoder(city_attributes_raw)
-    train_set = get_set1(train_cdv, city_encoder, city_attributes_raw)
-    train_set = drop_nan_records(train_set)
-
-    test_raw = load_test_data()
-    test_ctv = to_city_time_vector(test_raw)
-    normalize(test_ctv, normalization_params)
-    test_cdv = to_city_day_vector(test_ctv, wind_treshold)
-    test_set = get_set1(test_cdv, city_encoder, city_attributes_raw)
-    test_set = drop_nan_records(test_set)
-
-    return (train_set, test_set)
-
-def get_sets__with_3_neighbors__24_predictions__without_aggregation():  # TODO
-    city_attributes_raw = pd.read_csv("data/city_attributes.csv", sep=";")
-
-    train_raw = load_train_data()
-    nearest_cities = get_nearest_cities(city_attributes_raw)
-    normalization_params = get_normalization_params(train_raw)
-    train_ctv = to_city_time_vector(train_raw)
-    normalize(train_ctv, normalization_params)
-    normalize_city_attributes(city_attributes_raw)
-    wind_treshold = get_wind_treshold(6, normalization_params)
-    train_cdv = to_city_day_vector(train_ctv, wind_treshold)
-    city_encoder = get_city_encoder(city_attributes_raw)
-    train_set = get_set1(train_cdv, city_encoder, city_attributes_raw)
-    train_set = drop_nan_records(train_set)
-
-    test_raw = load_test_data()
-    test_ctv = to_city_time_vector(test_raw)
-    normalize(test_ctv, normalization_params)
-    test_cdv = to_city_day_vector(test_ctv, wind_treshold)
-    test_set = get_set1(test_cdv, city_encoder, city_attributes_raw)
-    test_set = drop_nan_records(test_set)
-
-    return (train_set, test_set)
-
-def get_sets__with_3_neighbors__8_predictions__with_aggregation():  # TODO
-    city_attributes_raw = pd.read_csv("data/city_attributes.csv", sep=";")
-
-    train_raw = load_train_data()
-    nearest_cities = get_nearest_cities(city_attributes_raw)
-    normalization_params = get_normalization_params(train_raw)
-    train_ctv = to_city_time_vector(train_raw)
-    normalize(train_ctv, normalization_params)
-    normalize_city_attributes(city_attributes_raw)
-    wind_treshold = get_wind_treshold(6, normalization_params)
-    train_cdv = to_city_day_vector(train_ctv, wind_treshold)
-    city_encoder = get_city_encoder(city_attributes_raw)
-    train_set = get_set1(train_cdv, city_encoder, city_attributes_raw)
-    train_set = drop_nan_records(train_set)
-
-    test_raw = load_test_data()
-    test_ctv = to_city_time_vector(test_raw)
-    normalize(test_ctv, normalization_params)
-    test_cdv = to_city_day_vector(test_ctv, wind_treshold)
-    test_set = get_set1(test_cdv, city_encoder, city_attributes_raw)
-    test_set = drop_nan_records(test_set)
-
-    return (train_set, test_set)

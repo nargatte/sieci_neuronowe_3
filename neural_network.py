@@ -21,7 +21,7 @@ class FullConnectWeights:
 
 
 class FullConnectLayer:
-    def __init__(self, input_layer, output_size=None, activation=None, rng=None, dropout_rate=1, copy=None):
+    def __init__(self, input_layer, output_size=None, activation=None, rng=None, dropout_rate=1.0, copy=None):
         self.input_layer = input_layer
         self.rng = rng
         self.dropout_rate = dropout_rate
@@ -106,12 +106,13 @@ class MergeLayer:
 
 
 class NeuralNetwork:
-    def __init__(self, output_layer, loss):
+    def __init__(self, output_layer, loss, rng):
         self.output_layer = output_layer
         self.loss = loss
         self.weights = []
         self.find_weights_req(output_layer)
         self.optimizers = [AdamOptimizer(w) for w in self.weights]
+        self.rng = rng
 
     def find_weights_req(self, layer):
         if type(layer) == InputLayer:
@@ -183,10 +184,14 @@ class NeuralNetwork:
 
         return new_set
 
-    def train(self, train_set, test_set, batch_size, output_name, rng, epoch_count=100):
-        for epoch in range(epoch_count):
-            print(f"Epoch {epoch + 1}/{epoch_count}: ", end='')
-            train_set = self.shuffle_set(train_set, rng)
+    def train(self, train_set, test_set, batch_size, output_name, epoch_count=100):
+        stagnant_count = 0
+        epoch = 0
+        test_losses = []
+        while stagnant_count < 3:
+            epoch += 1
+            print(f"Epoch {epoch}: ", end='')
+            train_set = self.shuffle_set(train_set, self.rng)
             train_batched = self.get_batches(train_set, batch_size)
             losses = []
             for batch in train_batched:
@@ -199,6 +204,11 @@ class NeuralNetwork:
             predicted = self.propagate_forward(test_set)
             test_loss = self.calculate_loss(predicted, test_set[output_name])
             print(f"train: {train_loss}, test: {test_loss}")
+            test_losses.append(test_loss)
+            if (len(test_losses) > 1 and test_losses[-1] >= test_losses[-2]):
+                stagnant_count += 1
+            else:
+                stagnant_count = 0
 
     def predict(self, data):
         return self.propagate_forward(data)
