@@ -26,7 +26,7 @@ from test_case_creator import (
 
 # %%
 (train_set1, test_set1, params1) = get_sets__without_neighbors__one_prediction__without_aggregation()
-(train_set2, test_set2, params2) = get_sets__with_3_neighbors__one_prediction__without_aggregation()
+# (train_set2, test_set2, params2) = get_sets__with_3_neighbors__one_prediction__without_aggregation()
 # (train_set3, test_set3, params3) = get_sets__without_neighbors__24_predictions__without_aggregation()
 (train_set4, test_set4, params4) = get_sets__without_neighbors__one_prediction__with_aggregation()
 
@@ -920,11 +920,11 @@ def test(function, output, train_set, test_set, params, figname):
 # %%
 # test(get_h5_net_1, "output_temp", train_set1, test_set1, params1, "n1_r.png")
 # test(get_h5_net_2, "output_temp", train_set1, test_set1, params1, "n2_r.png")
-test(get_h5_net_3, "output_temp", train_set2, test_set2, params2, "n3_r.png")
+# test(get_h5_net_3, "output_temp", train_set2, test_set2, params2, "n3_r.png")
 
-test(get_h5_net_1, "output_wind", train_set1, test_set1, params1, "n1_c.png")
-test(get_h5_net_2, "output_wind", train_set1, test_set1, params1, "n2_c.png")
-test(get_h5_net_3, "output_wind", train_set2, test_set2, params2, "n3_c.png")
+# test(get_h5_net_1, "output_wind", train_set1, test_set1, params1, "n1_c.png")
+# test(get_h5_net_2, "output_wind", train_set1, test_set1, params1, "n2_c.png")
+# test(get_h5_net_3, "output_wind", train_set2, test_set2, params2, "n3_c.png")
 
 # %% [markdown]
 # ## H6 - classification will have better accuracy using ReLUs, while regression will have better accuracy using sigmoids
@@ -1041,10 +1041,10 @@ def test(function, output, activation, train_set, test_set, params, figname):
     fig.savefig(os.path.join("plots", "h6", figname))
 
 # %%
-test(get_h6_net_1, "output_temp", d.relu, train_set1, test_set1, params1, "n1_r_relu.png")
-test(get_h6_net_1, "output_temp", d.sigmoid, train_set1, test_set1, params1, "n1_r_sigmoid.png")
-test(get_h6_net_2, "output_wind", d.relu, train_set1, test_set1, params1, "n2_c_relu.png")
-test(get_h6_net_2, "output_wind", d.sigmoid, train_set1, test_set1, params1, "n2_c_sigmoid.png")
+# test(get_h6_net_1, "output_temp", d.relu, train_set1, test_set1, params1, "n1_r_relu.png")
+# test(get_h6_net_1, "output_temp", d.sigmoid, train_set1, test_set1, params1, "n1_r_sigmoid.png")
+# test(get_h6_net_2, "output_wind", d.relu, train_set1, test_set1, params1, "n2_c_relu.png")
+# test(get_h6_net_2, "output_wind", d.sigmoid, train_set1, test_set1, params1, "n2_c_sigmoid.png")
 
 # %% [markdown]
 # ## H7 - aggregation will grant similar results with less computations needed
@@ -1153,10 +1153,10 @@ def test(function, output, train_set, test_set, params, figname):
     start = time.time()
     (train_losses, test_losses) = net.train(train_set, test_set, 1024, output)
     end = time.time()
+    
+    print(f"Time elapsed: {end - start : .2f} s")
 
     if output == "output_temp":
-        print(f"Time elapsed: {end - start : .2f} s")
-
         predicted = denormalized(net.predict(train_set), params["temperature"])
         expected = denormalized(train_set[output], params["temperature"])
         diffs = np.abs(predicted - expected)
@@ -1197,9 +1197,9 @@ def test(function, output, train_set, test_set, params, figname):
     fig.savefig(os.path.join("plots", "h7", figname))
 
 # %%
-test(get_h7_net_1, "output_temp", train_set1, test_set1, params1, "n1_r.png")
-test(get_h7_net_2, "output_temp", train_set4, test_set4, params4, "n2_r.png")
-test(get_h7_net_3, "output_temp", train_set4, test_set4, params4, "n3_r.png")
+# test(get_h7_net_1, "output_temp", train_set1, test_set1, params1, "n1_r.png")
+# test(get_h7_net_2, "output_temp", train_set4, test_set4, params4, "n2_r.png")
+# test(get_h7_net_3, "output_temp", train_set4, test_set4, params4, "n3_r.png")
 
 test(get_h7_net_1, "output_wind", train_set1, test_set1, params1, "n1_c.png")
 test(get_h7_net_2, "output_wind", train_set4, test_set4, params4, "n2_c.png")

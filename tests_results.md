@@ -60,15 +60,39 @@ Hinge:
 Regression:
 1. 27 epochs, 46.57% / 44.87%, 146.79 s (no sharing)
 2. 12 epochs, 45.38% / 39.98%, 71.79 s (days sharing)
-3.  epochs, % / %,  s (days and cities sharing)
+3. 69 epochs, 41.64% / 39.86%, 1389.94 s (days and cities sharing)
 
 Classification:
-1.  epochs, 75.52% / 60.77%, 0.5 / 0.5,  s (no sharing)
-2.  epochs, 75.52% / 60.77%, 0.5 / 0.5,  s (days sharing)
-3.  epochs, 75.52% / 60.77%, 0.5 / 0.5,  s (days and cities sharing)
+1. 5 epochs, 75.52% / 60.77%, 0.5 / 0.5, 39.89 s (no sharing)
+2. 10 epochs, 75.52% / 60.77%, 0.5 / 0.5, 79.93 s (days sharing)
+3. 11 epochs, 75.52% / 60.77%, 0.5 / 0.5, 258.30 s (days and cities sharing)
 
 
 # H6 - classification will have better accuracy using ReLUs, while regression will have better accuracy using sigmoids
 
+Regression with ReLU: 6 epochs, 52.48% / 7.49%, 27.76 s
+Regression with sigmoid: 5 epochs, 16.26% / 15.98%, 48.25 s
+Classification with ReLU: 5 epochs, 75.52% / 60.77%, 0.5 / 0/5, 34.90 s
+Classification with sigmoid: 5 epochs, 75.52% / 60.77%, 0.5 / 0.5, 55.95 s
 
+
+# H7 - aggregation will grant similar results with less computation needed
+
+Regression:
+1. 6 epochs, 52.48% / 7.49%, 33.68 s (without aggregation)
+2. 11 epochs, 50.98% / 7.49%, 26.54 s(with aggregation)
+3. 4 epochs, 45.79% / 7.98%, 6.55 s (with aggregation)
+
+Classification:
+1. 5 epochs, 75.52%, 60.77%, 0.5 / 0.5, 32.09 s (without aggregation)
+2. 16 epochs, 81.93% / 74.40%, 0.5 / 0.5, 63.68 s (with aggregation) (probably not better, just more non-windy days when aggregated)
+3. 16 epochs, 81.93 / 74.40%, 0.5 / 0.5, 43.85 s (with aggregation)
+
+
+# H8 - predicting middle day will grant better accuracy, but worse convergence
+
+Regression without middle day prediction: 4 epochs, 33.42% / 8.11%, 8.22 s
+Regression with middle day prediction: 4 epochs 48.05% / 6.82%, 19.06 s
+Classification without middle day prediction: 10 epochs, 75.52% / 60.77%, 0.5 / 0.5, 37.64 s
+Classification with middle day prediction: 16 epochs, 75.52% / 60.77%, 0.5 / 0.5, 116.20 s
 
