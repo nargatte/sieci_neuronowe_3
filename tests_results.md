@@ -73,8 +73,11 @@ Classification:
 # H6 - classification will have better accuracy using ReLUs, while regression will have better accuracy using sigmoids
 
 Regression with ReLU: 6 epochs, 52.48% / 7.49%, 27.76 s
+
 Regression with sigmoid: 5 epochs, 16.26% / 15.98%, 48.25 s
+
 Classification with ReLU: 5 epochs, 75.52% / 60.77%, 0.5 / 0/5, 34.90 s
+
 Classification with sigmoid: 5 epochs, 75.52% / 60.77%, 0.5 / 0.5, 55.95 s
 
 
@@ -94,7 +97,10 @@ Classification:
 # H8 - predicting middle day will grant better accuracy, but worse convergence
 
 Regression without middle day prediction: 4 epochs, 33.42% / 8.11%, 8.22 s
+
 Regression with middle day prediction: 4 epochs 48.05% / 6.82%, 19.06 s
+
 Classification without middle day prediction: 10 epochs, 75.52% / 60.77%, 0.5 / 0.5, 37.64 s
+
 Classification with middle day prediction: 16 epochs, 75.52% / 60.77%, 0.5 / 0.5, 116.20 s
 
